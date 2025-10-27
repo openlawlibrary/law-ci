@@ -30,7 +30,7 @@ init:
 
 install:
   # upgrade pip
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
+  - "%PYTHON%\\python.exe -m pip install --upgrade \"pip<25.3\""
 
   # the only way we can use the deploy key is by putting it in an environment variable (see above)
   # and then using PowerShell (ps) to copy the environment variable into a file (see below)
