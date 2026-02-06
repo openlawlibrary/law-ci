@@ -1,0 +1,76 @@
+build_cloud: oll-target-runners
+image: Ubuntu
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+init:
+  # Sign in to access the GitHub Container Registry
+  - sh: |
+      docker login --username oll-bot --password $GH_DOCKER_ACCESS_TOKEN ghcr.io
+  # Select the correct image and container name
+  - sh: |
+      IMAGE_NAME="ghcr.io/openlawlibrary/platform/archive-automation";
+      CONTAINER_NAME="oll-archive-automation-${APPVEYOR_PROJECT_SLUG}-${APPVEYOR_BUILD_NUMBER}";
+  # SELECT THE IMAGE TAG
+  - sh: |
+      if [[ -n "${DOCKER_IMG_TAG}" ]]; then
+        IMAGE_TAG="${DOCKER_IMG_TAG}";
+      else
+        IMAGE_TAG="latest";
+        # Pull all the image tags, keep "latest" image tag up to date
+        docker pull --all-tags $IMAGE_NAME;
+      fi
+
+before_build:
+  # Safe-Check the container name is not running.
+  - sh: |
+      if docker inspect -f '{{.State.Status}}' "$CONTAINER_NAME" > /dev/null 2>&1; then
+        if [[ "$(docker inspect -f '{{.State.Status}}' "$CONTAINER_NAME")" == "running" ]]; then
+          echo "> CONTAINER ${CONTAINER_NAME} IS RUNNING!";
+          exit 1;
+        else
+          echo "> CONTAINER ${CONTAINER_NAME} ALREADY EXISTS; REMOVING IT";
+          docker rm $CONTAINER_NAME;
+        fi
+      fi
+  # Dump all environment variables that are important to 'env.list' file, this file will be used for starting container.
+  - sh: |
+      touch env.list
+      skip_env_vars=("SHELL" "__appveyor_value" "MACHTYPE" "HOSTNAME" "CI_WINDOWS" "SHELLOPTS" "BASH_LINENO" "CI_MACOS" "ENABLENUGETPACKAGERESTORE" "BASH_ALIASES" "BASHOPTS" "DIRSTACK" "EUID" "LOGNAME" "DOTNET_TOOLS_PATH" "__appveyor_pipe_out" "__appveyor_line" "OPTIND" "CI_LINUX" "BASH_VERSION" "SYSTEMD_EXEC_PID" "BASH" "LINES" "HOME" "LANG" "COLUMNS" "OSTYPE" "PIPESTATUS" "INVOCATION_ID" "BASH_ARGC" "snap_xdg_path" "DOTNET_BUNDLE_EXTRACT_BASE_DIR" "BASH_ARGV" "mode" "BASH_CMDS" "__appveyor_result" "TERM" "USER" "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT" "__appveyor_key" "SHLVL" "__appveyor_pipe_in" "CI_FREEBSD" "BASH_SOURCE" "IFS" "BASH_REMATCH" "PS4" "JOURNAL_STREAM" "OPTERR" "XDG_DATA_DIRS" "PATH" "CI" "__appveyor_cmd" "BUILT" "GROUPS" "set_builtins" "HOSTTYPE" "UID" "snap_bin_path" "BASHPID" "BASH_ARGV0" "BASH_COMMAND" "BASH_SUBSHELL" "BASH_VERSINFO" "COMP_WORDBREAKS" "EPOCHREALTIME" "EPOCHSECONDS" "FUNCNAME" "HISTCMD" "LINENO" "OLDPWD" "RANDOM" "SECONDS" "SRANDOM" "skip_env_vars")
+      while IFS='=' read -r var_name var_value; do
+        if [[ ${#var_name} -lt 6 ]]; then
+          continue
+        fi
+        skip="False"
+        for skip_var in "${skip_env_vars[@]}"; do
+          if [[ "${var_name}" == "${skip_var}" ]]; then
+            skip="True"
+            break
+          fi
+        done
+        if [[ "${skip}" == "False" ]]; then
+          echo "${var_name}=${var_value}" >> env.list
+        fi
+      done < <(env)
+
+build_script:
+  - sh: |
+      docker run --rm \
+        --env-file env.list \
+        -e GPG_TTY=tty -v /dev/bus/usb:/dev/bus/usb -v /run/pcscd/pcscd.comm:/run/pcscd/pcscd.comm \
+        --name "${CONTAINER_NAME}" --privileged "${IMAGE_NAME}:${IMAGE_TAG}"
+
+on_finish:
+  - sh: |
+      if docker inspect -f '{{.State.Status}}' "$CONTAINER_NAME" > /dev/null 2>&1; then
+        docker rm $CONTAINER_NAME;
+      fi
+
+notifications:
+  - provider: Slack
+    incoming_webhook:
+      # post to the fire channel
+      secure: KUaR+KAqX1jU0LF7kRDKHHGEAoItFzIHSjcreyRvnrRGMiSObCLPipW6KJUwvpl7CEWa8PP2LPzgiQssPcUWLCzoIVY+NvucTI+1NJ0H7GM=
+    on_build_success: false
+
