@@ -56,7 +56,7 @@ before_build:
 
 build_script:
   - sh: |
-      docker run --rm \
+      docker run \
         --env-file env.list \
         -e GPG_TTY=tty -v /dev/bus/usb:/dev/bus/usb -v /run/pcscd/pcscd.comm:/run/pcscd/pcscd.comm \
         --name "${CONTAINER_NAME}" --privileged "${IMAGE_NAME}:${IMAGE_TAG}"
