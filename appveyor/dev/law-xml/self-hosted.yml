@@ -58,6 +58,7 @@ build_script:
   - sh: |
       docker run \
         --env-file env.list \
+        -e MY_UID=$(id -u) -e MY_GUID=$(id -g) \
         -e GPG_TTY=tty -v /dev/bus/usb:/dev/bus/usb -v /run/pcscd/pcscd.comm:/run/pcscd/pcscd.comm \
         --name "${CONTAINER_NAME}" --privileged "${IMAGE_NAME}:${IMAGE_TAG}"
 
