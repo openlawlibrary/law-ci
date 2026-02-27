@@ -64,10 +64,10 @@ before_build:
         git clone -q git@github.com:openlawlibrary/platform.git ..\wheels\platform
         git -C ..\wheels\platform checkout -q $env:PLATFORM_BRANCH
         $env:CORE_WHEEL = "-e ..\wheels\platform\core"
-        
+
         If($env:PARTNER -eq 'OLL_PARTNERS_US_DC') {
           $env:PARTNERS_WHEEL = "-e ..\wheels\platform\partners-us-dc"
-        } else {  
+        } else {
           $env:PARTNERS_WHEEL = "-e ..\wheels\platform\partners"
         };
       } else {
@@ -101,12 +101,12 @@ build_script:
   # update timestamp and/or snapshot metadata files if about to expire
   # if previous command merges something to master, this command won't update anything
   - "%PYTHON%\\python.exe -m oll.tools.cli ci update-timestamp-and-snapshot --auth ../%APPVEYOR_PROJECT_SLUG% %FLAG%"
-  
+
 notifications:
   - provider: Slack
     incoming_webhook:
       # post to the fire channel
-      secure: KUaR+KAqX1jU0LF7kRDKHHGEAoItFzIHSjcreyRvnrRGMiSObCLPipW6KJUwvpl7CEWa8PP2LPzgiQssPcUWLCzoIVY+NvucTI+1NJ0H7GM=
+      secure: KUaR+KAqX1jU0LF7kRDKHHGEAoItFzIHSjcreyRvnrS4f5lvQEQPW0UtUnLklMDQUKXLMggpRL5yNzT7qVLwDO2LM5Bj+JUEbrzM6LZScwU=
     on_build_success: false
 
 
