@@ -49,7 +49,7 @@ before_build:
   - ps: $CONTENT_ARRAY = $REQUIREMENTS_CONTENT -split "# ";
   - ps: $env:PARTNER_NAMESPACE = $CONTENT_ARRAY[1];
 
-        
+
   - "%PYTHON%\\python.exe -m pip -q install -r requirements.txt"
   - "%PYTHON%\\python.exe -m pip -q install pytest"
   - "%PYTHON%\\python.exe -m pip list"
