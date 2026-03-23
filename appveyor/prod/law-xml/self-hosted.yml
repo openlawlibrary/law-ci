@@ -73,5 +73,3 @@ notifications:
       # post to the fire channel
       secure: KUaR+KAqX1jU0LF7kRDKHHGEAoItFzIHSjcreyRvnrRGMiSObCLPipW6KJUwvpl7CEWa8PP2LPzgiQssPcUWLCzoIVY+NvucTI+1NJ0H7GM=
     on_build_success: false
-
-
