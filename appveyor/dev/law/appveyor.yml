@@ -4,6 +4,8 @@ image:
 branches:
   except:
     - merged/update/*
+    - master
+    - main
 
 environment:
   matrix:
