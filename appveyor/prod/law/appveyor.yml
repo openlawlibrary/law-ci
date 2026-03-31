@@ -3,7 +3,7 @@ image:
 
 branches:
   except:
-    - merged/update/.*/
+    - /merged/update/.*/
     - master
     - main
 
