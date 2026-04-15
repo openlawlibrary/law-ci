@@ -53,13 +53,17 @@ before_build:
           echo "${var_name}=${var_value}" >> env.list
         fi
       done < <(env)
+  # Create the local archive directory path if not present
+  - sh: |
+      sudo mkdir -p /opt/archive
+      sudo chown $(whoami) /opt/archive
 
 build_script:
   - sh: |
       docker run \
         --env-file env.list \
         -e MY_UID=$(id -u) -e MY_GUID=$(id -g) \
-        --mount type=bind,source=$LOCAL_ARCHIVE_PATH,target=/opt/publish/archive -e IS_LOCAL_ARCHIVE_PATH=True \
+        --mount type=bind,source=$LOCAL_ARCHIVE_PATH,target=/opt/archive -e IS_LOCAL_ARCHIVE_PATH=True \
         --name "${CONTAINER_NAME}" --privileged "${IMAGE_NAME}:${IMAGE_TAG}"
 
 on_finish:
