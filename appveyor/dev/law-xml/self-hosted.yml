@@ -58,6 +58,14 @@ before_build:
           echo "${var_name}=${var_value}" >> env.list
         fi
       done < <(env)
+  # Log image info before container run
+  - sh: |
+      echo "Starting container with:"
+      echo "IMAGE_NAME: ${IMAGE_NAME}"
+      echo "IMAGE_TAG: ${IMAGE_TAG}"
+      echo "IMAGE_ID: $(docker images -q $IMAGE_NAME:$IMAGE_TAG)"
+      echo "CONTAINER_NAME: ${CONTAINER_NAME}"
+      echo "###################################################################"
 
 build_script:
   - sh: |
