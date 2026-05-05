@@ -72,6 +72,7 @@ build_script:
       docker run \
         --env-file env.list \
         -e MY_UID=$(id -u) -e MY_GUID=$(id -g) \
+        --mount type=bind,source="/opt/archive",target=/opt/shared-folders -e IS_LOCAL_FUSE=True \
         --name "${CONTAINER_NAME}" --privileged "${IMAGE_NAME}:${IMAGE_TAG}"
 
 on_finish:
