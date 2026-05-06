@@ -42,7 +42,7 @@ before_build:
   # Dump all environment variables that are important to 'env.list' file, this file will be used for starting container.
   - sh: |
       touch env.list
-      skip_env_vars=("SHELL" "__appveyor_value" "MACHTYPE" "HOSTNAME" "CI_WINDOWS" "SHELLOPTS" "BASH_LINENO" "CI_MACOS" "ENABLENUGETPACKAGERESTORE" "BASH_ALIASES" "BASHOPTS" "DIRSTACK" "EUID" "LOGNAME" "DOTNET_TOOLS_PATH" "__appveyor_pipe_out" "__appveyor_line" "OPTIND" "CI_LINUX" "BASH_VERSION" "SYSTEMD_EXEC_PID" "BASH" "LINES" "HOME" "LANG" "COLUMNS" "OSTYPE" "PIPESTATUS" "INVOCATION_ID" "BASH_ARGC" "snap_xdg_path" "DOTNET_BUNDLE_EXTRACT_BASE_DIR" "BASH_ARGV" "mode" "BASH_CMDS" "__appveyor_result" "TERM" "USER" "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT" "__appveyor_key" "SHLVL" "__appveyor_pipe_in" "CI_FREEBSD" "BASH_SOURCE" "IFS" "BASH_REMATCH" "PS4" "JOURNAL_STREAM" "OPTERR" "XDG_DATA_DIRS" "PATH" "CI" "__appveyor_cmd" "BUILT" "GROUPS" "set_builtins" "HOSTTYPE" "UID" "snap_bin_path" "BASHPID" "BASH_ARGV0" "BASH_COMMAND" "BASH_SUBSHELL" "BASH_VERSINFO" "COMP_WORDBREAKS" "EPOCHREALTIME" "EPOCHSECONDS" "FUNCNAME" "HISTCMD" "LINENO" "OLDPWD" "RANDOM" "SECONDS" "SRANDOM" "skip_env_vars", "IS_DEVELOPMENT")
+      skip_env_vars=("SHELL" "__appveyor_value" "MACHTYPE" "HOSTNAME" "CI_WINDOWS" "SHELLOPTS" "BASH_LINENO" "CI_MACOS" "ENABLENUGETPACKAGERESTORE" "BASH_ALIASES" "BASHOPTS" "DIRSTACK" "EUID" "LOGNAME" "DOTNET_TOOLS_PATH" "__appveyor_pipe_out" "__appveyor_line" "OPTIND" "CI_LINUX" "BASH_VERSION" "SYSTEMD_EXEC_PID" "BASH" "LINES" "HOME" "LANG" "COLUMNS" "OSTYPE" "PIPESTATUS" "INVOCATION_ID" "BASH_ARGC" "snap_xdg_path" "DOTNET_BUNDLE_EXTRACT_BASE_DIR" "BASH_ARGV" "mode" "BASH_CMDS" "__appveyor_result" "TERM" "USER" "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT" "__appveyor_key" "SHLVL" "__appveyor_pipe_in" "CI_FREEBSD" "BASH_SOURCE" "IFS" "BASH_REMATCH" "PS4" "JOURNAL_STREAM" "OPTERR" "XDG_DATA_DIRS" "PATH" "CI" "__appveyor_cmd" "BUILT" "GROUPS" "set_builtins" "HOSTTYPE" "UID" "snap_bin_path" "BASHPID" "BASH_ARGV0" "BASH_COMMAND" "BASH_SUBSHELL" "BASH_VERSINFO" "COMP_WORDBREAKS" "EPOCHREALTIME" "EPOCHSECONDS" "FUNCNAME" "HISTCMD" "LINENO" "OLDPWD" "RANDOM" "SECONDS" "SRANDOM" "skip_env_vars")
       while IFS='=' read -r var_name var_value; do
         if [[ ${#var_name} -lt 6 ]]; then
           continue
@@ -58,6 +58,14 @@ before_build:
           echo "${var_name}=${var_value}" >> env.list
         fi
       done < <(env)
+  # Log image info before container run
+  - sh: |
+      echo "Starting container with:"
+      echo "IMAGE_NAME: ${IMAGE_NAME}"
+      echo "IMAGE_TAG: ${IMAGE_TAG}"
+      echo "IMAGE_ID: $(docker images -q $IMAGE_NAME:$IMAGE_TAG)"
+      echo "CONTAINER_NAME: ${CONTAINER_NAME}"
+      echo "###################################################################"
 
 build_script:
   - sh: |
