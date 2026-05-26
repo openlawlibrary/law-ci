@@ -106,7 +106,7 @@ build_script:
 test_script:
   # run roundtrip tests
   - ps: >-
-      if ($env:APPVEYOR_REPO_BRANCH -eq 'master' -Or $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH -eq 'master'){
+      if ($env:APPVEYOR_REPO_BRANCH -in @('master', 'main') -Or $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH -in @('master', 'main')){
         cd $env:APPVEYOR_BUILD_FOLDER;
         $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
         iex $run_roundtrip;
@@ -116,7 +116,7 @@ test_script:
           $host.SetShouldExit($LastExitCode)
         }
       } else {
-        echo "Skipping rountrip tests - not master branch build";
+        echo "Skipping rountrip tests - not master or main branch build";
       }
 notifications:
   - provider: Slack
