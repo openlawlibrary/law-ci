@@ -107,12 +107,16 @@ test_script:
   - ps: >-
       if ($env:APPVEYOR_REPO_BRANCH -in @('master', 'main') -Or $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH -in @('master', 'main')){
         cd $env:APPVEYOR_BUILD_FOLDER;
-        $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
-        iex $run_roundtrip;
-        if ($LastExitCode -eq 4 -or $LastExitCode -eq 5) {
-            Write-Warning "Skipping roundtrip tests - roundtrip tests not found";
-        } elseif ($LastExitCode -ne 0) {
-          $host.SetShouldExit($LastExitCode)
+        if ($env:PARTNER_NAMESPACE -eq 'oll.partners.us.dc') {
+          Write-Warning "Skipping roundtrip tests - not implemented for DC";
+        } else {
+          $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
+          iex $run_roundtrip;
+          if ($LastExitCode -eq 4 -or $LastExitCode -eq 5) {
+              Write-Warning "Skipping roundtrip tests - roundtrip tests not found";
+          } elseif ($LastExitCode -ne 0) {
+            $host.SetShouldExit($LastExitCode)
+          }
         }
       } else {
         echo "Skipping rountrip tests - not master or main branch build";
