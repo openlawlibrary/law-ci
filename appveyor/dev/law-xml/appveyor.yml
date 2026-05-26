@@ -47,7 +47,6 @@ before_build:
   - ps: $env:PARTNER_NAMESPACE = $CONTENT_ARRAY[1];
 
   - ps: |
-      $ErrorActionPreference = 'Stop'
       If ($env:TAF_BRANCH) {
         git clone -q git@github.com:openlawlibrary/taf.git ..\wheels\taf
         if ($LASTEXITCODE -ne 0) { throw "git clone taf failed" }
