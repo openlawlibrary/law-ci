@@ -107,7 +107,7 @@ test_script:
   - ps: >-
       if ($env:APPVEYOR_REPO_BRANCH -in @('master', 'main') -Or $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH -in @('master', 'main')){
         cd $env:APPVEYOR_BUILD_FOLDER;
-        if ($env:PARTNER_NAMESPACE -eq 'oll.partners.us.dc') {
+        if ($env:PARTNER_NAMESPACE.Trim() -eq 'oll.partners.us.dc') {
           Write-Warning "Skipping roundtrip tests - not implemented for DC";
         } else {
           $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
