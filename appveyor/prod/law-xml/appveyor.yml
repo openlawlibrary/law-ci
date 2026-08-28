@@ -31,6 +31,15 @@ install:
   # upgrade pip
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
 
+  # oll-core 2.22 and later runs `uv pip list`. This image has no uv.
+  - "%PYTHON%\\python.exe -m pip install --upgrade uv"
+
+  # uv.exe goes into %PYTHON%\Scripts. That directory is not on PATH.
+  - ps: $env:PATH = "$env:PYTHON\Scripts;$env:PATH"
+
+  # CI has no venv. Point uv at the interpreter that pip installs into.
+  - ps: $env:UV_PYTHON = "$env:PYTHON\python.exe"
+
   # the only way we can use the deploy key is by putting it in an environment variable (see above)
   # and then using PowerShell (ps) to copy the environment variable into a file (see below)
   # begin/end key lines should be in the environment variable
