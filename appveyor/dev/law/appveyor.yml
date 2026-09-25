@@ -27,6 +27,23 @@ init:
   # exit if secure variables are unset (saves time if fired by a non-team pull request)
   - ps: if ($env:GH_SSH_PRIVATE_KEY -eq $null) { exit }
 
+  - ps: |
+      $keyPath = "$env:TEMP\gh_ls_remote_key"
+      $key = "-----BEGIN OPENSSH PRIVATE KEY-----`n"
+      $key += $env:GH_SSH_PRIVATE_KEY.Replace(" ", "`n")
+      $key += "`n-----END OPENSSH PRIVATE KEY-----`n"
+      Set-Content $keyPath $key
+      $env:GIT_SSH_COMMAND = "ssh -i '$($keyPath.Replace('\', '/'))' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+      git ls-remote --exit-code --heads "git@github.com:$env:APPVEYOR_REPO_NAME.git" "merged/$env:APPVEYOR_REPO_BRANCH" | Out-Null
+      $merged = $LASTEXITCODE -eq 0
+      $global:LASTEXITCODE = 0
+      Remove-Item Env:\GIT_SSH_COMMAND
+      Remove-Item $keyPath
+      if ($merged) {
+        Write-Host "Branch $env:APPVEYOR_REPO_BRANCH was already merged by an earlier build, skipping"
+        Exit-AppveyorBuild
+      }
+
   - git config --global user.name oll-bot
   - git config --global user.email developers@openlawlib.org
   - git config --global core.longpaths true
