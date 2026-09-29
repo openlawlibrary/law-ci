@@ -19,8 +19,8 @@ init:
       else
         IMAGE_TAG="latest";
         # Pull all the image tags, keep "latest" image tag up to date
-        docker pull --all-tags $IMAGE_NAME;
-      fi
+      fi;
+      docker pull $IMAGE_NAME:$IMAGE_TAG;
 
 before_build:
   # Safe-Check the container name is not running.
