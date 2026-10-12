@@ -87,6 +87,11 @@ before_build:
         if ($LASTEXITCODE -ne 0) { throw "git clone platform failed" }
         git -C ..\wheels\platform checkout -q $env:PLATFORM_BRANCH
         if ($LASTEXITCODE -ne 0) { throw "git checkout platform branch failed" }
+        $versionFile = "..\wheels\platform\.python-version"
+        If (Test-Path $versionFile) {
+          $version = (Get-Content $versionFile -Raw).Trim()
+          $env:PYTHON = "C:\Python$($version.Replace('.', ''))-x64"
+        }
         $env:CORE_WHEEL = "-e ..\wheels\platform\core"
 
         If($env:PARTNER -eq 'OLL_PARTNERS_US_DC') {
