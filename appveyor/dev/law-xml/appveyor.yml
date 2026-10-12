@@ -79,7 +79,7 @@ before_build:
           $VERSION = $CONTENT_ARRAY[0] -split "~="
           $env:CORE_WHEEL += "~=" + $VERSION[1]
         }
-        $env:PARTNERS_WHEEL = "--pre " + $CONTENT_ARRAY[0]
+        $env:PARTNERS_WHEEL = "--pre -r requirements.txt"
       }
 
   - "%PYTHON%\\python.exe -m pip -q install wheel"
@@ -91,8 +91,6 @@ before_build:
 
   - "%PYTHON%\\python.exe  -m oll.tools.cli ci clone-repos-from-xml .. ../%APPVEYOR_PROJECT_SLUG% "
 
-  # install versioned resources (if and only if the build is a tag or cron build)
-  - "%PYTHON%\\python.exe -m pip -q install -r requirements.txt"
   - "%PYTHON%\\python.exe -m pip -q install pytest"
   - "%PYTHON%\\python.exe -m pip check"
   # print out the git commits for xml repo
