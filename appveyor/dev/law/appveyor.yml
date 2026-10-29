@@ -106,7 +106,7 @@ before_build:
       }
 
   # upgrade pip after PYTHON is chosen
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
+  - "%PYTHON%\\python.exe -m pip install --upgrade \"pip>=26.2.2\""
   - "%PYTHON%\\python.exe -m pip -q install wheel"
   - "%PYTHON%\\python.exe -m pip -q install %TAF_WHEEL%"
   - "%PYTHON%\\python.exe -m pip -q install %CORE_WHEEL%"

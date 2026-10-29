@@ -29,7 +29,7 @@ init:
 
 install:
   # upgrade pip
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
+  - "%PYTHON%\\python.exe -m pip install --upgrade \"pip>=26.2.2\""
 
   # oll-core 2.22 and later runs `uv pip list`. This image has no uv.
   - "%PYTHON%\\python.exe -m pip install --upgrade uv"
