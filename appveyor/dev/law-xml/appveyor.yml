@@ -26,9 +26,6 @@ init:
   - git config --global user.email developers@openlawlib.org
 
 install:
-  # upgrade pip
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
-
   # the only way we can use the deploy key is by putting it in an environment variable (see above)
   # and then using PowerShell (ps) to copy the environment variable into a file (see below)
   # begin/end key lines should be in the environment variable
@@ -82,6 +79,8 @@ before_build:
         $env:PARTNERS_WHEEL = "--pre -r requirements.txt"
       }
 
+  # upgrade pip after PYTHON is chosen
+  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   - "%PYTHON%\\python.exe -m pip -q install wheel"
   - "%PYTHON%\\python.exe -m pip -q install %TAF_WHEEL%"
   - "%PYTHON%\\python.exe -m pip -q install %CORE_WHEEL%"
