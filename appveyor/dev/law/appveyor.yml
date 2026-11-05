@@ -105,6 +105,8 @@ before_build:
         $env:PARTNERS_WHEEL = "--pre -r requirements.txt"
       }
 
+  - ps: Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem -Name LongPathsEnabled -Value 1
+
   # upgrade pip after PYTHON is chosen
   - "%PYTHON%\\python.exe -m pip install --upgrade \"pip>=26.2.2\""
   - "%PYTHON%\\python.exe -m pip -q install wheel"
