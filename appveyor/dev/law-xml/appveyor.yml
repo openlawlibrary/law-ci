@@ -115,12 +115,20 @@ test_script:
         if ($env:PARTNER_NAMESPACE.Trim() -eq 'oll.partners.us.dc') {
           Write-Warning "Skipping roundtrip tests - not implemented for DC";
         } else {
-          $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
-          iex $run_roundtrip;
-          if ($LastExitCode -eq 4 -or $LastExitCode -eq 5) {
-              Write-Warning "Skipping roundtrip tests - roundtrip tests not found";
-          } elseif ($LastExitCode -ne 0) {
-            $host.SetShouldExit($LastExitCode)
+          $has_cli = (& "$env:PYTHON\python.exe" -m oll.tools.cli tests roundtrip --help | Out-String) -match '--on-push';
+          if ($has_cli) {
+            & "$env:PYTHON\python.exe" -m oll.tools.cli tests roundtrip --on-push --xml-codified-path "..\$($env:UPSTREAM)-codified-preview";
+            if ($LastExitCode -ne 0) {
+              $host.SetShouldExit($LastExitCode);
+            }
+          } else {
+            $run_roundtrip = $env:PYTHON + '\python.exe -m pytest --pyargs ' + $env:PARTNER_NAMESPACE + '.tests.docs.code.roundtrip -m "full_roundtrip"';
+            iex $run_roundtrip;
+            if ($LastExitCode -eq 4 -or $LastExitCode -eq 5) {
+                Write-Warning "Skipping roundtrip tests - roundtrip tests not found";
+            } elseif ($LastExitCode -ne 0) {
+              $host.SetShouldExit($LastExitCode)
+            }
           }
         }
       } else {
